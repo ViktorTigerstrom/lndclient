@@ -459,6 +459,12 @@ func (s *GrpcLndServices) waitForChainSync(ctx context.Context,
 		mainCtx = context.Background()
 	}
 
+	shouldFail, ok := mainCtx.Value("SimulateFail").(bool)
+	if ok && shouldFail {
+		time.Sleep(30 * time.Second)
+		return fmt.Errorf("error in GetInfo call: simulated failure")
+	}
+
 	// We spawn a goroutine that polls in regular intervals and reports back
 	// once the chain is ready (or something went wrong). If the chain is
 	// already synced, this should return almost immediately.
